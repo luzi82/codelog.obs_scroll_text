@@ -1,0 +1,67 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<script>
+window.onload=function(){
+    console.log("NHVOYWWG");
+    console.log(measureText("hello"));
+    scrollElement0 = document.getElementById("scroll0");
+    scrollElement1 = document.getElementById("scroll1");
+    window.requestAnimationFrame(frameTick);
+    
+    displayText("HelloWorld");
+}
+
+function displayText(txt){
+    textWidth = measureText(txt);
+    textWidth_sp = textWidth+10;
+    startMs = getNowMs();
+    scrollElement0.innerText = txt;
+    scrollElement1.innerText = txt;
+    enableScroll = true;
+}
+
+function measureText(txt){
+    var measureElement = document.getElementById("measure");
+    measureElement.innerText = txt;
+    var ret = measureElement.getBoundingClientRect().width;
+    measureElement.innerText = "";
+    return ret;
+}
+
+var enableScroll = false;
+var textWidth = 0;
+var textWidth_sp = 0;
+var startMs = 0;
+var scrollElement0 = null;
+var scrollElement1 = null;
+function frameTick(){
+    if(!enableScroll){
+        window.requestAnimationFrame(frameTick);
+        return;
+    }
+    var nowMs = getNowMs();
+    
+    var x = ((startMs-nowMs)*20)/1000;
+    x %= textWidth_sp;
+    scrollElement0.style.left = x;
+    scrollElement1.style.left = x+textWidth_sp;
+    
+    window.requestAnimationFrame(frameTick);
+}
+
+function getNowMs(){
+    return new Date().getTime();
+}
+</script>
+</head>
+<body>
+<div>
+<div id="scroll0" style="position:absolute"></div>
+<div id="scroll1" style="position:absolute"></div>
+</div>
+<div style="position:absolute;visibility:hidden;">
+<div id="measure"></div>
+</div>
+</body>
+</html>
