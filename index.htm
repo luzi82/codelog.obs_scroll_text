@@ -9,15 +9,56 @@ window.onload=function(){
     scrollElement1 = document.getElementById("scroll1");
     window.requestAnimationFrame(frameTick);
     
-    displayText("HelloWorld");
+    displayText(
+        [
+            "HelloWorld",
+            "Asdf",
+            "IQCERBHS",
+            "PAPFQZZR",
+            "OAJMLPGP",
+            "CLJELVLV",
+            "XVVCDYOS",
+            "QRYZUPPT",
+            "EQVHPXQT",
+            "PCXVATNN",
+            "TJZJXCRA",
+            "HFCTNPIE",
+            "YSKWNVKP",
+        ],
+        10,600
+    );
 }
 
-function displayText(txt){
-    textWidth = measureText(txt);
-    textWidth_sp = textWidth+10;
+function displayText(txtList, sp, _screenWidth){
+    var scrollElement = document.getElementById("scroll");
+    scrollElement.innerHTML = "";
+    scrollDataList = [];
+    var totalWidth = 0;
+    xMod = 0;
+    screenWidth = _screenWidth;
+    for(var j=0;(j<txtList.length)||(totalWidth<xMod+_screenWidth);++j){
+        var i = j % txtList.length;
+        var txt = txtList[i];
+        var textWidth = measureText(txt);
+        var element = document.createElement("div");
+        var textNode = document.createTextNode(txt);
+        element.appendChild(textNode);
+        element.style.display = "none";
+        element.style.position = "absolute";
+        scrollElement.appendChild(element);
+        scrollDataList.push({
+            "offsetX0": totalWidth,
+            "offsetX1": totalWidth+textWidth,
+            "element":  element,
+            "display":  false,
+        });
+        totalWidth += textWidth + sp;
+        if(j<txtList.length){
+            xMod = totalWidth;
+        }
+    }
+    var j = 0;
     startMs = getNowMs();
-    scrollElement0.innerText = txt;
-    scrollElement1.innerText = txt;
     enableScroll = true;
 }
 
@@ -30,11 +71,11 @@ function measureText(txt){
 }
 
 var enableScroll = false;
-var textWidth = 0;
-var textWidth_sp = 0;
+var xMod = 0;
 var startMs = 0;
-var scrollElement0 = null;
-var scrollElement1 = null;
+var scrollDataList = null;
+var screenWidth = 0;
+// offsetX0, offsetX1, element, display
 function frameTick(){
     if(!enableScroll){
         window.requestAnimationFrame(frameTick);
@@ -42,10 +83,26 @@ function frameTick(){
     }
     var nowMs = getNowMs();
     
-    var x = ((startMs-nowMs)*20)/1000;
-    x %= textWidth_sp;
-    scrollElement0.style.left = x;
-    scrollElement1.style.left = x+textWidth_sp;
+    var x = ((startMs-nowMs)*200)/1000;
+    x %= xMod;
+    for(var i=0;i<scrollDataList.length;++i){
+        var scrollData = scrollDataList[i];
+        var offsetX0 = scrollData["offsetX0"] + x;
+        var offsetX1 = scrollData["offsetX1"] + x;
+        var display = scrollData["display"];
+        var shouldDisplay = (offsetX1>0)&&(offsetX0<screenWidth);
+        var element = scrollData["element"];
+        if((!display)&&(shouldDisplay)){
+            element.style.left = offsetX0;
+            element.style.display = "block";
+            scrollData["display"] = true;
+        }else if((display)&&(!shouldDisplay)){
+            element.style.display = "none";
+            scrollData["display"] = false;
+        }else if ((display)&&(shouldDisplay)){
+            element.style.left = offsetX0;
+        }
+    }
     
     window.requestAnimationFrame(frameTick);
 }
@@ -57,8 +114,7 @@ function getNowMs(){
 </head>
 <body>
 <div>
-<div id="scroll0" style="position:absolute"></div>
-<div id="scroll1" style="position:absolute"></div>
+<div id="scroll"></div>
 </div>
 <div style="position:absolute;visibility:hidden;">
 <div id="measure"></div>
