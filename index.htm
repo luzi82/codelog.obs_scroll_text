@@ -1,59 +1,61 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<script src="conf.js"></script>
 <script>
 window.onload=function(){
-    console.log("NHVOYWWG");
-    console.log(measureText("hello"));
-    scrollElement0 = document.getElementById("scroll0");
-    scrollElement1 = document.getElementById("scroll1");
-    window.requestAnimationFrame(frameTick);
+    var bodyElement = document.body;
+    bodyElement.style.fontSize = DISPLAY_TEXT_PARAM["FONT_SIZE"];
+    bodyElement.style.fontFamily = DISPLAY_TEXT_PARAM["FONT_FAMILY"];
+
+    var scrollElement = document.getElementById("scroll");
+    scrollElement.style.left = "0px";
+    scrollElement.style.top = "0px";
+    scrollElement.style.width = ""+DISPLAY_TEXT_PARAM["SCREEN_WIDTH"]+"px";
+    scrollElement.style.height = ""+DISPLAY_TEXT_PARAM["SCREEN_HEIGHT"]+"px";
     
-    displayText(
-        [
-            "HelloWorld",
-            "Asdf",
-            "IQCERBHS",
-            "PAPFQZZR",
-            "OAJMLPGP",
-            "CLJELVLV",
-            "XVVCDYOS",
-            "QRYZUPPT",
-            "EQVHPXQT",
-            "PCXVATNN",
-            "TJZJXCRA",
-            "HFCTNPIE",
-            "YSKWNVKP",
-        ],
-        10,600
-    );
+    displayText();
+
+    window.requestAnimationFrame(frameTick);
 }
 
-function displayText(txtList, sp, _screenWidth){
+function displayText(){
+    var TXT_LIST = DISPLAY_TEXT_PARAM["TXT_LIST"];
+    var TXT_SPACE = DISPLAY_TEXT_PARAM["TXT_SPACE"];
+    var SCREEN_HEIGHT = DISPLAY_TEXT_PARAM["SCREEN_HEIGHT"];
+    var COLOR = DISPLAY_TEXT_PARAM["COLOR"];
+    var SCROLL_SPEED = DISPLAY_TEXT_PARAM["SCROLL_SPEED"];
+
     var scrollElement = document.getElementById("scroll");
     scrollElement.innerHTML = "";
     scrollDataList = [];
+    scrollSpeed = SCROLL_SPEED;
     var totalWidth = 0;
     xMod = 0;
-    screenWidth = _screenWidth;
-    for(var j=0;(j<txtList.length)||(totalWidth<xMod+_screenWidth);++j){
-        var i = j % txtList.length;
-        var txt = txtList[i];
+    screenWidth = DISPLAY_TEXT_PARAM["SCREEN_WIDTH"];
+    for(var j=0;(j<TXT_LIST.length)||(totalWidth<xMod+screenWidth);++j){
+        var i = j % TXT_LIST.length;
+        var txt = TXT_LIST[i];
         var textWidth = measureText(txt);
-        var element = document.createElement("div");
+        var divElement = document.createElement("div");
         var textNode = document.createTextNode(txt);
-        element.appendChild(textNode);
-        element.style.display = "none";
-        element.style.position = "absolute";
-        scrollElement.appendChild(element);
+        divElement.appendChild(textNode);
+        divElement.style.display = "none";
+        divElement.style.position = "absolute";
+        divElement.style.top = "0px";
+        divElement.style.height = ""+SCREEN_HEIGHT+"px";
+        divElement.style.lineHeight = ""+SCREEN_HEIGHT+"px";
+        divElement.style.color = COLOR;
+        //divElement.style.backgroundColor = "green";
+        scrollElement.appendChild(divElement);
         scrollDataList.push({
             "offsetX0": totalWidth,
             "offsetX1": totalWidth+textWidth,
-            "element":  element,
+            "element":  divElement,
             "display":  false,
         });
-        totalWidth += textWidth + sp;
-        if(j<txtList.length){
+        totalWidth += textWidth + TXT_SPACE;
+        if(j<TXT_LIST.length){
             xMod = totalWidth;
         }
     }
@@ -75,7 +77,8 @@ var xMod = 0;
 var startMs = 0;
 var scrollDataList = null;
 var screenWidth = 0;
-// offsetX0, offsetX1, element, display
+var scrollSpeed = 0;
+// offsetX0, offsetX1, element, diTXT_SPACElay
 function frameTick(){
     if(!enableScroll){
         window.requestAnimationFrame(frameTick);
@@ -83,7 +86,7 @@ function frameTick(){
     }
     var nowMs = getNowMs();
     
-    var x = ((startMs-nowMs)*200)/1000;
+    var x = ((startMs-nowMs)*scrollSpeed)/1000;
     x %= xMod;
     for(var i=0;i<scrollDataList.length;++i){
         var scrollData = scrollDataList[i];
@@ -111,6 +114,17 @@ function getNowMs(){
     return new Date().getTime();
 }
 </script>
+<style>
+div{
+    white-space: nowrap;
+    margin: 0px;
+}
+
+div#scroll{
+    position: absolute;
+    overflow: hidden;
+}
+</style>
 </head>
 <body>
 <div>
